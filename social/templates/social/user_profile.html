@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ profile_user.username }} - Friendzy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f4fa;
+            color: #292638;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px #0000000b;
+        }
+
+        .logo {
+            color: #7048e8;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: #7048e8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 15px #2520440a;
+        }
+
+        .banner {
+            height: 145px;
+            background: linear-gradient(120deg, #7048e8, #a58af7);
+            border-radius: 12px;
+        }
+
+        .profile-info {
+            text-align: center;
+            margin-top: -65px;
+        }
+
+        .avatar {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            border: 5px solid white;
+            object-fit: cover;
+            background: #eee8ff;
+        }
+
+        .default-avatar {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            border: 5px solid white;
+            background: #eee8ff;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 55px;
+        }
+
+        h2 {
+            color: #7048e8;
+            margin-top: 12px;
+        }
+
+        .username {
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .bio {
+            margin: 18px auto;
+            max-width: 500px;
+            padding: 15px;
+            background: #f7f5ff;
+            border-radius: 10px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 45px;
+            margin: 22px 0;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 22px;
+            color: #7048e8;
+        }
+
+        .stat span {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        button, .btn {
+            border: none;
+            background: #7048e8;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        button:hover, .btn:hover {
+            background: #5935c7;
+        }
+
+        .message-btn {
+            background: #20a879;
+        }
+
+        .message-btn:hover {
+            background: #16845e;
+        }
+
+        .edit-btn {
+            background: #eee8ff;
+            color: #7048e8;
+        }
+
+        .section-title {
+            color: #7048e8;
+            margin: 25px 0 15px;
+        }
+
+        .post-header {
+            font-weight: bold;
+            color: #7048e8;
+            margin-bottom: 12px;
+        }
+
+        .post-content {
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-top: 12px;
+        }
+
+        .meta {
+            color: #888;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 500px) {
+            nav {
+                padding: 16px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .stats {
+                gap: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">💜 Friendzy</div>
+    <a href="{% url 'home' %}">🏠 Home</a>
+</nav>
+
+<main class="container">
+
+    <!-- Public Profile -->
+    <section class="card">
+
+        <div class="banner"></div>
+
+        <div class="profile-info">
+
+            {% if profile.profile_image %}
+                <img
+                    src="{{ profile.profile_image.url }}"
+                    alt="Profile photo"
+                    class="avatar"
+                >
+            {% else %}
+                <div class="default-avatar">👤</div>
+            {% endif %}
+
+            <h2>{{ profile_user.username }}</h2>
+
+            <p class="username">@{{ profile_user.username }}</p>
+
+            <div class="bio">
+                {{ profile.bio|default:"No bio added yet." }}
+            </div>
+
+            <!-- Followers and Following -->
+            <div class="stats">
+
+                <div class="stat">
+                    <strong>{{ followers_count }}</strong>
+                    <span>Followers</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ following_count }}</strong>
+                    <span>Following</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ posts|length }}</strong>
+                    <span>Posts</span>
+                </div>
+
+            </div>
+
+            <!-- Profile Actions -->
+            <div class="actions">
+
+                {% if request.user.is_authenticated %}
+                    {% if request.user != profile_user %}
+
+                        <form method="post"
+                              action="{% url 'toggle_follow' profile_user.username %}">
+
+                            {% csrf_token %}
+
+                            {% if is_following %}
+                                <button type="submit">Unfollow</button>
+                            {% else %}
+                                <button type="submit">+ Follow</button>
+                            {% endif %}
+
+                        </form>
+
+                        <a class="btn message-btn"
+                           href="{% url 'chat' profile_user.username %}">
+                            💬 Message
+                        </a>
+
+                    {% else %}
+
+                        <a class="btn edit-btn"
+                           href="{% url 'profile' %}">
+                            ✏️ Edit My Profile
+                        </a>
+
+                    {% endif %}
+                {% else %}
+
+                    <a class="btn" href="{% url 'login' %}">
+                        Login to Follow
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- User Posts -->
+    <h2 class="section-title">
+        📰 Posts by {{ profile_user.username }}
+    </h2>
+
+    {% for post in posts %}
+
+        <article class="card">
+
+            <div class="post-header">
+                👤 {{ profile_user.username }}
+            </div>
+
+            {% if post.content %}
+                <p class="post-content">
+                    {{ post.content|linebreaksbr }}
+                </p>
+            {% endif %}
+
+            {% if post.image %}
+                <img
+                    src="{{ post.image.url }}"
+                    alt="Post image"
+                    class="post-image"
+                >
+            {% endif %}
+
+            {% if post.image_url %}
+                <img
+                    src="{{ post.image_url }}"
+                    alt="Post image"
+                    class="post-image"
+                >
+            {% endif %}
+
+            <p class="meta">
+                {{ post.created_at|date:"M d, Y - H:i" }}
+            </p>
+
+        </article>
+
+    {% empty %}
+
+        <section class="card">
+            <p>This user has not published any posts yet.</p>
+        </section>
+
+    {% endfor %}
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile - Friendzy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f4fa;
+            color: #292638;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px #0000000b;
+        }
+
+        .logo {
+            color: #7048e8;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: #7048e8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 35px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 17px;
+            padding: 25px;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 15px #2520440a;
+        }
+
+        .profile-banner {
+            background: linear-gradient(120deg, #7048e8, #a58af7);
+            height: 145px;
+            border-radius: 13px;
+        }
+
+        .profile-info {
+            text-align: center;
+            margin-top: -65px;
+        }
+
+        .avatar {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            background: #eee8ff;
+        }
+
+        .default-avatar {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            border: 5px solid white;
+            background: #eee8ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 55px;
+        }
+
+        .profile-info h2 {
+            color: #7048e8;
+            margin-top: 12px;
+        }
+
+        .username {
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .email {
+            margin-top: 15px;
+            color: #555;
+        }
+
+        .bio {
+            background: #f7f5ff;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .edit-title {
+            color: #7048e8;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            margin: 18px 0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 9px;
+        }
+
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #e5e3ec;
+            border-radius: 9px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #7048e8;
+        }
+
+        .help-text {
+            color: #888;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        button {
+            background: #7048e8;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #5935c7;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #b00020;
+            padding: 12px;
+            border-radius: 9px;
+            margin-bottom: 15px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #7048e8;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 500px) {
+            nav {
+                padding: 16px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .card {
+                padding: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">💜 Friendzy</div>
+    <a href="{% url 'home' %}">🏠 Home</a>
+</nav>
+
+<main class="container">
+
+    <!-- Profile Information -->
+    <section class="card">
+
+        <div class="profile-banner"></div>
+
+        <div class="profile-info">
+
+            {% if profile.profile_image %}
+                <img
+                    src="{{ profile.profile_image.url }}"
+                    alt="Profile Photo"
+                    class="avatar"
+                >
+            {% else %}
+                <div class="default-avatar">👤</div>
+            {% endif %}
+
+            <h2>{{ profile_user.username }}</h2>
+
+            <p class="username">@{{ profile_user.username }}</p>
+
+            <p class="email">
+                ✉️ {{ profile_user.email|default:"Email not added" }}
+            </p>
+
+            <div class="bio">
+                <strong>About Me</strong>
+                <p>
+                    {{ profile.bio|default:"No bio added yet. Tell us about yourself!" }}
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Edit Profile -->
+    <section class="card">
+
+        <h2 class="edit-title">✏️ Edit Your Profile</h2>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="field">
+                <label for="profile_image">
+                    📷 Upload Profile Photo
+                </label>
+
+                <input
+                    type="file"
+                    id="profile_image"
+                    name="profile_image"
+                    accept=".jpg,.jpeg,.png,.webp"
+                >
+
+                <p class="help-text">
+                    JPG, PNG, WebP — Maximum size 5 MB.
+                </p>
+            </div>
+
+            <div class="field">
+                <label for="bio">📝 Your Bio</label>
+
+                <textarea
+                    id="bio"
+                    name="bio"
+                    maxlength="300"
+                    placeholder="Tell us about yourself..."
+                >{{ profile.bio }}</textarea>
+
+                <p class="help-text">
+                    Write something about yourself (maximum 300 characters).
+                </p>
+            </div>
+
+            <button type="submit">💾 Save Profile</button>
+
+        </form>
+
+        <a class="back-link" href="{% url 'home' %}">
+            ← Back to Home
+        </a>
+
+    </section>
+
+</main>
+
+</body>
+</html>

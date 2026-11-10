@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Friendzy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f3fa;
+            margin: 0;
+            color: #29263a;
+        }
+
+        nav {
+            background: white;
+            padding: 16px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            color: #6c4cff;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            color: #6c4cff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 35px auto;
+            padding: 0 15px;
+        }
+
+        .heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .heading h2 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .heading p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .notification-card {
+            background: white;
+            padding: 17px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid #eeeaf8;
+            box-shadow: 0 3px 12px rgba(40,30,90,0.03);
+            transition: 0.2s;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 16px rgba(40,30,90,0.08);
+        }
+
+        .notification-icon {
+            min-width: 48px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #f0edff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-content p {
+            margin: 0;
+            line-height: 1.5;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .notification-content strong {
+            color: #27223d;
+        }
+
+        .meta {
+            color: #999;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        .view-link {
+            display: inline-block;
+            margin-top: 9px;
+            color: #6c4cff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-card {
+            background: white;
+            padding: 45px 20px;
+            text-align: center;
+            border-radius: 16px;
+            border: 1px solid #eeeaf8;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+            margin-bottom: 12px;
+        }
+
+        .empty-card h3 {
+            margin: 8px 0;
+        }
+
+        .empty-card p {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 12px;
+            background: #6c4cff;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        @media(max-width: 500px) {
+            nav {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 19px;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            nav a {
+                font-size: 12px;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .heading h2 {
+                font-size: 22px;
+            }
+
+            .notification-card {
+                padding: 13px;
+                gap: 10px;
+            }
+
+            .notification-icon {
+                min-width: 40px;
+                width: 40px;
+                height: 40px;
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">💜 Friendzy</div>
+
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'inbox' %}">Messages</a>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <div class="heading">
+            <div>
+                <h2>🔔 Notifications</h2>
+                <p>Stay updated with your Friendzy activities.</p>
+            </div>
+        </div>
+
+        {% for notification in user_notifications %}
+
+            <article class="notification-card">
+
+                <div class="notification-icon">
+                    {% if notification.notification_type == 'like' %}
+                        ❤️
+                    {% elif notification.notification_type == 'follow' %}
+                        👤
+                    {% else %}
+                        🔔
+                    {% endif %}
+                </div>
+
+                <div class="notification-content">
+
+                    <p>
+                        <strong>{{ notification.sender.username }}</strong>
+                        {{ notification.message }}
+                    </p>
+
+                    <div class="meta">
+                        {{ notification.created_at|date:"M d, Y - H:i" }}
+                    </div>
+
+                    {% if notification.link %}
+                        <a class="view-link" href="{{ notification.link }}">
+                            View Activity →
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <div class="empty-card">
+                <div class="empty-icon">🔔</div>
+
+                <h3>No Notifications Yet</h3>
+
+                <p>
+                    When someone likes your post or follows you,
+                    their activity will appear here.
+                </p>
+
+                <a class="home-link" href="{% url 'home' %}">
+                    Explore Friendzy
+                </a>
+            </div>
+
+        {% endfor %}
+
+    </main>
+
+</body>
+</html>

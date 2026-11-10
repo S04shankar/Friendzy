@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Friendzy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f3fa;
+            margin: 0;
+            color: #26243a;
+        }
+
+        nav {
+            background: white;
+            padding: 16px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            color: #6c4cff;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #6c4cff;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #6c4cff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .chat-card {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(40,30,90,0.08);
+        }
+
+        .chat-header {
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            border-bottom: 1px solid #eeeaf8;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6c4cff, #a58aff);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .user-info h2 {
+            margin: 0 0 5px;
+            font-size: 18px;
+        }
+
+        .user-info p {
+            margin: 0;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .messages {
+            min-height: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 22px;
+            background: #faf9ff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 15px;
+            margin: 9px 0;
+            border-radius: 15px;
+            overflow-wrap: anywhere;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .message strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .message p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .mine {
+            align-self: flex-end;
+            background: #6c4cff;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .theirs {
+            align-self: flex-start;
+            background: white;
+            color: #333;
+            border: 1px solid #eeeaf8;
+            border-bottom-left-radius: 4px;
+        }
+
+        .time {
+            font-size: 10px;
+            margin-top: 7px;
+            text-align: right;
+            opacity: 0.75;
+        }
+
+        .empty {
+            text-align: center;
+            color: #999;
+            margin: auto;
+            padding: 30px 10px;
+        }
+
+        .message-form {
+            padding: 17px 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            border-top: 1px solid #eeeaf8;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 13px 15px;
+            border: 1px solid #e3def5;
+            border-radius: 12px;
+            resize: none;
+            font: inherit;
+            outline: none;
+            min-height: 48px;
+            max-height: 120px;
+        }
+
+        textarea:focus {
+            border-color: #6c4cff;
+        }
+
+        button {
+            background: #6c4cff;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #5638df;
+        }
+
+        @media(max-width: 500px) {
+            .container {
+                margin: 15px auto;
+            }
+
+            .messages {
+                min-height: 300px;
+                padding: 15px;
+            }
+
+            .message {
+                max-width: 88%;
+            }
+
+            .message-form {
+                padding: 12px;
+                gap: 8px;
+            }
+
+            button {
+                padding: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">💜 Friendzy</div>
+        <a href="{% url 'inbox' %}">Messages</a>
+    </nav>
+
+    <main class="container">
+
+        <a class="back" href="{% url 'inbox' %}">← Back to Chats</a>
+
+        <section class="chat-card">
+
+            <div class="chat-header">
+                <div class="avatar">
+                    {{ other_user.username|first|upper }}
+                </div>
+
+                <div class="user-info">
+                    <h2>{{ other_user.username }}</h2>
+                    <p>Friendzy Private Chat</p>
+                </div>
+            </div>
+
+            <div class="messages" id="messages">
+
+                {% for message in conversation %}
+
+                    <div class="message {% if message.sender_id == user.id %}mine{% else %}theirs{% endif %}">
+
+                        <strong>{{ message.sender.username }}</strong>
+
+                        <p>{{ message.content|linebreaksbr }}</p>
+
+                        <div class="time">
+                            {{ message.created_at|date:"M d, Y - H:i" }}
+
+                            {% if message.sender_id == user.id and message.is_read %}
+                                · Read
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="empty">
+                        <h3>👋 Say Hello!</h3>
+                        <p>No messages yet. Start your conversation.</p>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <form method="post" class="message-form">
+                {% csrf_token %}
+
+                <textarea
+                    name="content"
+                    rows="2"
+                    maxlength="2000"
+                    placeholder="Write a private message..."
+                    required
+                ></textarea>
+
+                <button type="submit">Send ➤</button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <script>
+        const messages = document.getElementById("messages");
+
+        if (messages) {
+            messages.scrollTop = messages.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>
